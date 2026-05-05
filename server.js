@@ -99,6 +99,6 @@ app.get('/logout', (req, res) => {
 });
 
 // app.listen musí být VŽDY až jako úplně poslední věc v souboru!
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Royal Racing server běží na portu ${PORT}`);
 });
