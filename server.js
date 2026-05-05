@@ -5,7 +5,9 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+
+// OPRAVA PRO RAILWAY: Port nesmí být natvrdo 3000, Railway si ho určuje sám přes process.env.PORT
+const PORT = process.env.PORT || 3000;
 
 // Nastavení sessions (aby si web pamatoval, že je uživatel přihlášený)
 app.use(session({
@@ -85,16 +87,18 @@ app.get('/api/user', (req, res) => {
     }
 });
 
+// Cesta pro zobrazení Administrace (Musí být před app.listen!)
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 // Odhlášení
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
+// app.listen musí být VŽDY až jako úplně poslední věc v souboru!
 app.listen(PORT, () => {
-    console.log(`🚀 Royal Racing server běží na http://localhost:${PORT}`);
-});
-
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+    console.log(`🚀 Royal Racing server běží na portu ${PORT}`);
 });
