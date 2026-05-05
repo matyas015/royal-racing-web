@@ -34,7 +34,7 @@
         h1, h2, h3, .bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
         a { text-decoration: none; color: inherit; transition: 0.2s ease-in-out; }
 
-        /* Ochranná clona při načítání (aby někdo neviděl admin panel dřív, než ho to vykopne) */
+        /* Ochranná clona při načítání */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--darker); z-index: 9999;
@@ -117,7 +117,6 @@
         
         .action-btns { display: flex; gap: 10px; }
         
-        /* Obal pro formulář přidání jezdce */
         .add-form {
             display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 15px; align-items: end;
         }
@@ -127,13 +126,11 @@
 </head>
 <body>
 
-    <!-- Clona pro ověření -->
     <div id="loader">
         <div class="spinner"></div>
         <div style="color: #888; font-size: 12px; font-weight: 600; letter-spacing: 2px;">OVĚŘOVÁNÍ PŘÍSTUPU...</div>
     </div>
 
-    <!-- Boční menu -->
     <aside class="admin-sidebar">
         <div class="admin-logo">ROYAL <span>ADMIN</span></div>
         <nav class="admin-nav">
@@ -151,7 +148,6 @@
         </div>
     </aside>
 
-    <!-- Hlavní obsah -->
     <main class="admin-content">
         <div class="page-header">
             <div class="page-title">
@@ -161,7 +157,6 @@
             <button class="btn" id="save-all-btn">ULOŽIT ZMĚNY NA WEB</button>
         </div>
 
-        <!-- Přidání nového jezdce -->
         <div class="admin-card">
             <div class="admin-card-header">
                 <div class="admin-card-title">Přidat nového jezdce</div>
@@ -187,7 +182,6 @@
             </div>
         </div>
 
-        <!-- Aktuální tabulka -->
         <div class="admin-card">
             <div class="admin-card-header">
                 <div class="admin-card-title">Aktuální pořadí</div>
@@ -204,15 +198,17 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    <!-- Data generována JavaScriptem -->
-                </tbody>
+                    </tbody>
             </table>
         </div>
     </main>
 
     <script>
+        // Data budeme stahovat přímo ze serveru
+        let driversData = [];
+
         // ==========================================
-        // 1. BEZPEČNOST A OVĚŘENÍ (BOUNCER)
+        // 1. BEZPEČNOST A NAČTENÍ DAT
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             const loader = document.getElementById('loader');
@@ -222,35 +218,34 @@
                 const response = await fetch('/api/user');
                 
                 if (!response.ok) {
-                    // Není přihlášen vůbec -> vykopnout
                     window.location.href = '/';
                     return;
                 }
 
                 const user = await response.json();
                 
-                // ======== TADY ZADEJ ID TVÉ DISCORD ROLE PRO ORGANIZÁTORY ========
+                // Tvoje ID role Organizátora
                 const ADMIN_ROLE_ID = '1423786653440540703'; 
                 
-                // Kontrola role
                 if (!user.roles.includes(ADMIN_ROLE_ID)) {
-                    // Přihlášen je, ale nemá roli Organizátora -> vykopnout
                     alert('Nemáš oprávnění pro vstup do Administrace!');
                     window.location.href = '/';
                     return;
                 }
 
-                // === POKUD PROŠEL, NAČTEME STRÁNKU ===
-                // Nastavíme profil dole vlevo
+                // Nastavíme profil
                 document.getElementById('admin-name').textContent = user.username.toUpperCase();
                 if(user.avatar) {
                     document.getElementById('admin-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
                 }
 
-                // Schováme načítací obrazovku, protože má povolení
-                loader.style.display = 'none';
+                // NYNÍ STÁHNEME AKTUÁLNÍ TABULKU ZE SERVERU
+                const dataRes = await fetch('/api/leaderboard');
+                if (dataRes.ok) {
+                    driversData = await dataRes.json();
+                }
 
-                // Spustíme vykreslení tabulky
+                loader.style.display = 'none';
                 renderTable();
 
             } catch (err) {
@@ -260,20 +255,10 @@
         });
 
         // ==========================================
-        // 2. FUNKČNOST TABULKY A ŽEBŘÍČKU (PROZATÍM LOKÁLNÍ)
+        // 2. FUNKČNOST TABULKY
         // ==========================================
-        
-        // Zde budeme držet data pro zkoušku (časem se to bude tahat z tvého server.js)
-        let driversData = [
-            { id: 1, name: "VIKTOR_CZ", wins: 47, podiums: 61, points: 2840 },
-            { id: 2, name: "SpeedKing99", wins: 39, podiums: 55, points: 2610 },
-            { id: 3, name: "MadMax_SK", wins: 34, podiums: 50, points: 2390 },
-            { id: 4, name: "DriftLord", wins: 28, podiums: 44, points: 2100 }
-        ];
-
         const tbody = document.getElementById('table-body');
 
-        // Vykreslení tabulky
         function renderTable() {
             tbody.innerHTML = '';
             
@@ -304,7 +289,6 @@
             });
         }
 
-        // Úprava existujícího jezdce
         window.updateDriver = function(id, field, value) {
             const driver = driversData.find(d => d.id === id);
             if(driver) {
@@ -312,7 +296,6 @@
             }
         };
 
-        // Smazání jezdce
         window.deleteDriver = function(id) {
             if(confirm('Opravdu chceš tohoto jezdce smazat?')) {
                 driversData = driversData.filter(d => d.id !== id);
@@ -320,7 +303,6 @@
             }
         };
 
-        // Přidání nového jezdce tlačítkem
         document.getElementById('add-btn').addEventListener('click', () => {
             const name = document.getElementById('new-name').value;
             const wins = parseInt(document.getElementById('new-wins').value) || 0;
@@ -336,19 +318,40 @@
             
             driversData.push({ id: newId, name, wins, podiums, points });
             
-            // Vyčištění políček
             document.getElementById('new-name').value = '';
             document.getElementById('new-wins').value = '';
             document.getElementById('new-podiums').value = '';
             document.getElementById('new-points').value = '';
 
-            renderTable(); // Překreslení se srovnáním
+            renderTable();
         });
 
-        // Uložení (Zatím ukázka, co budeme dělat dál)
-        document.getElementById('save-all-btn').addEventListener('click', () => {
-            // Tady v budoucnu pošleme 'driversData' na náš server (do server.js)
-            alert('🛠 Tlačítko funguje! V dalším kroku naprogramujeme server.js, aby tahle data trvale uložil a propsal na hlavní stránku index.html.');
+        // ==========================================
+        // 3. SKUTEČNÉ ODESLÁNÍ NA SERVER
+        // ==========================================
+        document.getElementById('save-all-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('save-all-btn');
+            btn.textContent = 'UKLÁDÁM...';
+            
+            try {
+                // Pošleme data metodou POST na náš server.js
+                const res = await fetch('/api/leaderboard', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(driversData)
+                });
+                
+                if (res.ok) {
+                    alert('✅ Data byla úspěšně uložena a nahrána na web!');
+                } else {
+                    const err = await res.json();
+                    alert('❌ Chyba při ukládání: ' + (err.error || 'Neznámá chyba.'));
+                }
+            } catch(e) {
+                alert('❌ Chyba při komunikaci se serverem.');
+            }
+            
+            btn.textContent = 'ULOŽIT ZMĚNY NA WEB';
         });
 
     </script>
