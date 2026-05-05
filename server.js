@@ -67,7 +67,7 @@ app.get('/auth/discord/callback', async (req, res) => {
             
             res.redirect('/'); // Přesměrování zpět na hlavní stranu
         } catch (err) {
-            res.send('Chyba z Discordu: ' + err.message);
+            res.send('Nejsi členem našeho Discord serveru!');
         }
 
     } catch (error) {
@@ -93,4 +93,8 @@ app.get('/logout', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 Royal Racing server běží na http://localhost:${PORT}`);
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
