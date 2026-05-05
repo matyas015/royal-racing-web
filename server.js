@@ -5,7 +5,7 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-// Pro Railway musí být port dynamický, jinak to spadne
+// Pro Railway musí být port dynamický, jinak server spadne!
 const PORT = process.env.PORT || 3000;
 
 // Tohle server potřebuje, aby uměl číst odeslaná data z Administrace
@@ -43,7 +43,7 @@ app.post('/api/leaderboard', (req, res) => {
     }
     
     // ======== TADY ZADEJ ID TVÉ DISCORD ROLE ORGANIZÁTORA ========
-    const ADMIN_ROLE_ID = 'SEM_VLOZ_ID_TVY_DISCORD_ROLE'; 
+    const ADMIN_ROLE_ID = '1423786653440540703'; 
     
     if (!req.session.user.roles.includes(ADMIN_ROLE_ID)) {
         return res.status(403).json({ error: 'Nemáš oprávnění' });
