@@ -67,7 +67,7 @@ app.get('/auth/discord/callback', async (req, res) => {
             
             res.redirect('/'); // Přesměrování zpět na hlavní stranu
         } catch (err) {
-            res.send('Nejsi členem našeho Discord serveru!');
+            res.send('Chyba z Discordu: ' + err.message);
         }
 
     } catch (error) {
