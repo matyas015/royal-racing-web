@@ -5,23 +5,21 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-const PORT = 3000; // Nechávám přesně tvé funkční nastavení
+const PORT = 3000; // Necháváme tvoje funkční nastavení
 
-// PŘIDÁNO: Aby server uměl číst odeslaná data z Administrace
+// !! DŮLEŽITÉ: Tohle server potřebuje, aby uměl číst data z administrace
 app.use(express.json());
 
-// Nastavení sessions (aby si web pamatoval, že je uživatel přihlášený)
 app.use(session({
     secret: 'royal-racing-tajne-heslo',
     resave: false,
     saveUninitialized: false
 }));
 
-// Servírování tvého HTML a CSS ze složky public
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// DATABÁZE ŽEBŘÍČKU (Zatím v paměti serveru)
+// ŽEBŘÍČEK (Uložený v paměti serveru)
 // ==========================================
 let leaderboardData = [
     { id: 1, name: "VIKTOR_CZ", wins: 47, podiums: 61, points: 2840 },
@@ -30,19 +28,17 @@ let leaderboardData = [
     { id: 4, name: "DriftLord", wins: 28, podiums: 44, points: 2100 }
 ];
 
-// Pošle data žebříčku komukoliv, kdo si o ně řekne
+// Pošle data žebříčku na web
 app.get('/api/leaderboard', (req, res) => {
     res.json(leaderboardData);
 });
 
-// Přijme nová data z Administrace a uloží je (CHRÁNĚNO!)
+// Přijme nová data z Administrace a uloží je (ZABEZPEČENO)
 app.post('/api/leaderboard', (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'Nepřihlášen' });
-    }
+    if (!req.session.user) return res.status(401).json({ error: 'Nepřihlášen' });
     
     // ======== TADY ZADEJ ID TVÉ DISCORD ROLE ORGANIZÁTORA ========
-    const ADMIN_ROLE_ID = 'SEM_VLOZ_ID_TVY_DISCORD_ROLE'; 
+    const ADMIN_ROLE_ID = '1423786653440540703'; 
     
     if (!req.session.user.roles.includes(ADMIN_ROLE_ID)) {
         return res.status(403).json({ error: 'Nemáš oprávnění' });
@@ -53,22 +49,19 @@ app.post('/api/leaderboard', (req, res) => {
 });
 
 // ==========================================
-// PŘIHLÁŠENÍ A DISCORD LOGIKA
+// DISCORD PŘIHLÁŠENÍ
 // ==========================================
 
-// 1. KROK: Kliknutí na tlačítko přihlášení
 app.get('/auth/discord', (req, res) => {
     const url = `https://discord.com/api/oauth2/authorize?client_id=${process.env.CLIENT_ID}&redirect_uri=${encodeURIComponent(process.env.REDIRECT_URI)}&response_type=code&scope=identify`;
     res.redirect(url);
 });
 
-// 2. KROK: Návrat z Discordu na web
 app.get('/auth/discord/callback', async (req, res) => {
     const code = req.query.code;
     if (!code) return res.send('Nebyl poskytnut kód.');
 
     try {
-        // Výměna kódu za Access Token
         const tokenParams = new URLSearchParams({
             client_id: process.env.CLIENT_ID,
             client_secret: process.env.CLIENT_SECRET,
@@ -83,59 +76,48 @@ app.get('/auth/discord/callback', async (req, res) => {
 
         const accessToken = tokenResponse.data.access_token;
 
-        // Získání základních dat o uživateli (jméno, ID)
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
             headers: { Authorization: `Bearer ${accessToken}` }
         });
         const user = userResponse.data;
 
-        // Získání rolí uživatele z TVÉHO serveru pomocí Bota
         try {
             const memberResponse = await axios.get(`https://discord.com/api/guilds/${process.env.GUILD_ID}/members/${user.id}`, {
                 headers: { Authorization: `Bot ${process.env.BOT_TOKEN}` }
             });
             const roles = memberResponse.data.roles;
             
-            // Uložení do session
             req.session.user = {
                 id: user.id,
                 username: user.username,
                 avatar: user.avatar,
-                roles: roles // Tady máme ID všech jeho rolí z Discordu!
+                roles: roles
             };
             
-            res.redirect('/'); // Přesměrování zpět na hlavní stranu
+            res.redirect('/');
         } catch (err) {
             res.send('Nejsi členem našeho Discord serveru!');
         }
-
     } catch (error) {
         console.error(error);
         res.send('Chyba při přihlašování.');
     }
 });
 
-// API endpoint pro tvůj Frontend, aby si mohl ověřit, kdo je přihlášený
 app.get('/api/user', (req, res) => {
-    if (req.session.user) {
-        res.json(req.session.user);
-    } else {
-        res.status(401).json({ error: 'Nepřihlášen' });
-    }
+    if (req.session.user) res.json(req.session.user);
+    else res.status(401).json({ error: 'Nepřihlášen' });
 });
 
-// PŘIDÁNO: Cesta pro zobrazení Administrace
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Odhlášení
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
-// PŮVODNÍ SPOUŠTĚNÍ - BEZ MOJICH ÚPRAV
 app.listen(PORT, () => {
     console.log(`🚀 Royal Racing server běží na portu ${PORT}`);
 });
