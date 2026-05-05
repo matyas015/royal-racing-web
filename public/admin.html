@@ -10,8 +10,10 @@
             --gold: #e2b659;
             --dark: #0f0f0f;
             --darker: #050505;
+            --gray: #1a1a1a;
             --text: #d4d4d4;
             --danger: #ff4d4d;
+            --success: #2aff2a;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,41 +31,35 @@
             overflow: hidden;
         }
         
-        h1, .bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
+        h1, h2, h3, .bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
         a { text-decoration: none; color: inherit; transition: 0.2s ease-in-out; }
-        
+
+        /* Ochranná clona při načítání (aby někdo neviděl admin panel dřív, než ho to vykopne) */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--darker); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
             flex-direction: column; gap: 20px;
         }
-        
         .spinner {
-            width: 50px; height: 50px;
-            border: 5px solid rgba(226, 182, 89, 0.2);
+            width: 50px; height: 50px; border: 5px solid rgba(226, 182, 89, 0.2);
             border-top-color: var(--gold); border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
         @keyframes spin { to { transform: rotate(360deg); } }
-        
+
+        /* === BOČNÍ PANEL (SIDEBAR) === */
         .admin-sidebar {
             width: 280px; background: rgba(10, 10, 10, 0.95);
             border-right: 1px solid rgba(255,255,255,0.05);
             display: flex; flex-direction: column;
             box-shadow: 5px 0 20px rgba(0,0,0,0.5); z-index: 10;
         }
-        
         .admin-logo {
-            padding: 30px 20px; text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: var(--danger); font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px; letter-spacing: 3px;
+            padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--danger); font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px;
         }
-        
         .admin-logo span { color: #fff; }
-        
         .admin-nav { flex: 1; padding: 20px 0; }
         .admin-nav a {
             display: flex; align-items: center; gap: 15px; padding: 15px 25px;
@@ -71,10 +67,8 @@
             border-left: 3px solid transparent; transition: all 0.2s;
         }
         .admin-nav a:hover, .admin-nav a.active {
-            background: rgba(226, 182, 89, 0.05); color: var(--gold);
-            border-left-color: var(--gold);
+            background: rgba(226, 182, 89, 0.05); color: var(--gold); border-left-color: var(--gold);
         }
-        
         .admin-profile {
             padding: 20px; border-top: 1px solid rgba(255,255,255,0.05);
             display: flex; align-items: center; gap: 15px;
@@ -83,32 +77,32 @@
         .admin-profile-info { display: flex; flex-direction: column; }
         .admin-profile-name { font-family: 'Bebas Neue', sans-serif; color: #fff; font-size: 18px; letter-spacing: 1px; }
         .admin-profile-role { color: var(--danger); font-size: 10px; font-weight: 800; letter-spacing: 2px; }
-        
-        .admin-content { flex: 1; overflow-y: auto; padding: 50px; position: relative; }
+
+        /* === HLAVNÍ OBSAH === */
+        .admin-content {
+            flex: 1; overflow-y: auto; padding: 50px; position: relative;
+        }
         .page-header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
         .page-title h1 { font-size: 50px; color: #fff; line-height: 1; }
         .page-title p { color: #888; font-size: 14px; font-weight: 500; margin-top: 5px; }
-        
+
         .btn {
             background: var(--gold); color: var(--darker); padding: 10px 20px;
             font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
             border: none; cursor: pointer; border-radius: 4px; transition: all 0.2s;
         }
         .btn:hover { background: #fff; }
-        
         .btn-danger { background: rgba(255, 77, 77, 0.1); color: var(--danger); border: 1px solid var(--danger); }
         .btn-danger:hover { background: var(--danger); color: #fff; }
-        
+
+        /* === TABULKA ADMINU === */
         .admin-card {
             background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255,255,255,0.05);
             border-radius: 8px; padding: 30px; margin-bottom: 30px;
         }
         .admin-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .admin-card-title {
-            font-size: 18px; color: #fff; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1px; border-left: 3px solid var(--gold); padding-left: 10px;
-        }
-        
+        .admin-card-title { font-size: 18px; color: #fff; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid var(--gold); padding-left: 10px; }
+
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 15px; color: #666; font-size: 11px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); }
         td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.02); font-weight: 600; font-size: 14px; color: #ccc; }
@@ -121,76 +115,88 @@
         }
         .input-dark:focus { border-color: var(--gold); }
         
-        .add-form { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 15px; align-items: end; }
+        .action-btns { display: flex; gap: 10px; }
+        
+        /* Obal pro formulář přidání jezdce */
+        .add-form {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 15px; align-items: end;
+        }
         .form-group { display: flex; flex-direction: column; gap: 5px; }
         .form-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 800; }
     </style>
 </head>
 <body>
 
+    <!-- Clona pro ověření -->
     <div id="loader">
         <div class="spinner"></div>
-        <div style="color: #888; font-size: 12px; font-weight: 600; letter-spacing: 2px;">OVĚŘOVÁNÍ...</div>
+        <div style="color: #888; font-size: 12px; font-weight: 600; letter-spacing: 2px;">OVĚŘOVÁNÍ PŘÍSTUPU...</div>
     </div>
 
+    <!-- Boční menu -->
     <aside class="admin-sidebar">
         <div class="admin-logo">ROYAL <span>ADMIN</span></div>
         <nav class="admin-nav">
-            <a href="#" class="active">🏆 Žebříček</a>
-            <a href="/">⬅ Zpět</a>
+            <a href="#" class="active">🏆 Správa žebříčku</a>
+            <a href="#">👥 Seznam jezdců</a>
+            <a href="#">⚙️ Nastavení webu</a>
+            <a href="/" style="margin-top: 50px; color: #666;">⬅ Zpět na web</a>
         </nav>
         <div class="admin-profile">
             <img src="https://cdn.discordapp.com/embed/avatars/0.png" id="admin-avatar" alt="Admin">
             <div class="admin-profile-info">
-                <div class="admin-profile-name" id="admin-name">Admin</div>
+                <div class="admin-profile-name" id="admin-name">Načítání...</div>
                 <div class="admin-profile-role">ORGANIZÁTOR</div>
             </div>
         </div>
     </aside>
 
+    <!-- Hlavní obsah -->
     <main class="admin-content">
         <div class="page-header">
             <div class="page-title">
-                <h1>ŽEBŘÍČEK</h1>
-                <p>Upravuj data jezdců.</p>
+                <h1>ŽEBŘÍČEK JEZDCŮ</h1>
+                <p>Zde můžeš přidávat, upravovat a mazat jezdce v aktuální sezóně.</p>
             </div>
             <button class="btn" id="save-all-btn">ULOŽIT ZMĚNY NA WEB</button>
         </div>
 
+        <!-- Přidání nového jezdce -->
         <div class="admin-card">
             <div class="admin-card-header">
-                <div class="admin-card-title">Přidat jezdce</div>
+                <div class="admin-card-title">Přidat nového jezdce</div>
             </div>
             <div class="add-form">
                 <div class="form-group">
-                    <label class="form-label">Jméno</label>
-                    <input type="text" id="new-name" class="input-dark">
+                    <label class="form-label">Jméno jezdce (Discord / RP jméno)</label>
+                    <input type="text" id="new-name" class="input-dark" placeholder="Např. SpeedKing99">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Výhry</label>
-                    <input type="number" id="new-wins" class="input-dark" value="0">
+                    <input type="number" id="new-wins" class="input-dark" placeholder="0">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Pódia</label>
-                    <input type="number" id="new-podiums" class="input-dark" value="0">
+                    <input type="number" id="new-podiums" class="input-dark" placeholder="0">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Body</label>
-                    <input type="number" id="new-points" class="input-dark" value="0">
+                    <label class="form-label">Body celkem</label>
+                    <input type="number" id="new-points" class="input-dark" placeholder="0">
                 </div>
-                <button class="btn" id="add-btn" style="height: 35px;">PŘIDAT</button>
+                <button class="btn" id="add-btn" style="height: 35px;">PŘIDAT DO TABULKY</button>
             </div>
         </div>
 
+        <!-- Aktuální tabulka -->
         <div class="admin-card">
             <div class="admin-card-header">
-                <div class="admin-card-title">Pořadí</div>
+                <div class="admin-card-title">Aktuální pořadí</div>
             </div>
-            <table>
+            <table id="admin-table">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Jméno</th>
+                        <th style="width: 50px;">Pořadí</th>
+                        <th>Jméno jezdce</th>
                         <th>Výhry</th>
                         <th>Pódia</th>
                         <th>Body</th>
@@ -198,120 +204,153 @@
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                    </tbody>
+                    <!-- Data generována JavaScriptem -->
+                </tbody>
             </table>
         </div>
     </main>
 
     <script>
-        let driversData = [];
-
+        // ==========================================
+        // 1. BEZPEČNOST A OVĚŘENÍ (BOUNCER)
+        // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
+            const loader = document.getElementById('loader');
+            
             try {
-                // Ověření uživatele
-                const res = await fetch('/api/user');
-                if (!res.ok) return window.location.href = '/';
-                const user = await res.json();
+                // Zeptáme se serveru, kdo je přihlášen
+                const response = await fetch('/api/user');
                 
-                // ======== TADY ZADEJ ID TVÉ ROLE ========
-                const ADMIN_ROLE_ID = 'SEM_VLOZ_ID_TVY_DISCORD_ROLE'; 
-                
-                if (!user.roles.includes(ADMIN_ROLE_ID)) {
-                    return window.location.href = '/';
+                if (!response.ok) {
+                    // Není přihlášen vůbec -> vykopnout
+                    window.location.href = '/';
+                    return;
                 }
 
-                // Nastavení profilu admina vlevo dole
+                const user = await response.json();
+                
+                // ======== TADY ZADEJ ID TVÉ DISCORD ROLE PRO ORGANIZÁTORY ========
+                const ADMIN_ROLE_ID = '1423786653440540703'; 
+                
+                // Kontrola role
+                if (!user.roles.includes(ADMIN_ROLE_ID)) {
+                    // Přihlášen je, ale nemá roli Organizátora -> vykopnout
+                    alert('Nemáš oprávnění pro vstup do Administrace!');
+                    window.location.href = '/';
+                    return;
+                }
+
+                // === POKUD PROŠEL, NAČTEME STRÁNKU ===
+                // Nastavíme profil dole vlevo
                 document.getElementById('admin-name').textContent = user.username.toUpperCase();
                 if(user.avatar) {
                     document.getElementById('admin-avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
                 }
-                
-                // Skrytí načítací obrazovky
-                document.getElementById('loader').style.display = 'none';
 
-                // Načtení aktuálních dat žebříčku ze serveru
-                const dataRes = await fetch('/api/leaderboard');
-                driversData = await dataRes.json();
+                // Schováme načítací obrazovku, protože má povolení
+                loader.style.display = 'none';
+
+                // Spustíme vykreslení tabulky
                 renderTable();
-            } catch(e) { 
-                window.location.href = '/'; 
+
+            } catch (err) {
+                console.error('Chyba ověření:', err);
+                window.location.href = '/';
             }
         });
 
+        // ==========================================
+        // 2. FUNKČNOST TABULKY A ŽEBŘÍČKU (PROZATÍM LOKÁLNÍ)
+        // ==========================================
+        
+        // Zde budeme držet data pro zkoušku (časem se to bude tahat z tvého server.js)
+        let driversData = [
+            { id: 1, name: "VIKTOR_CZ", wins: 47, podiums: 61, points: 2840 },
+            { id: 2, name: "SpeedKing99", wins: 39, podiums: 55, points: 2610 },
+            { id: 3, name: "MadMax_SK", wins: 34, podiums: 50, points: 2390 },
+            { id: 4, name: "DriftLord", wins: 28, podiums: 44, points: 2100 }
+        ];
+
+        const tbody = document.getElementById('table-body');
+
         // Vykreslení tabulky
         function renderTable() {
-            const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
             
-            // Seřazení podle bodů (od nejlepšího)
+            // Seřazení podle bodů
             driversData.sort((a, b) => b.points - a.points);
-            
-            driversData.forEach((driver, i) => {
+
+            driversData.forEach((driver, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="color:var(--gold); font-family:'Bebas Neue'; font-size:20px;">${i+1}.</td>
-                    <td><input type="text" class="input-dark" value="${driver.name}" onchange="updateDriver(${driver.id}, 'name', this.value)"></td>
-                    <td><input type="number" class="input-dark" value="${driver.wins}" onchange="updateDriver(${driver.id}, 'wins', this.value)" style="width:70px;"></td>
-                    <td><input type="number" class="input-dark" value="${driver.podiums}" onchange="updateDriver(${driver.id}, 'podiums', this.value)" style="width:70px;"></td>
-                    <td><input type="number" class="input-dark" value="${driver.points}" onchange="updateDriver(${driver.id}, 'points', this.value)" style="width:90px; color:var(--gold);"></td>
-                    <td style="text-align:right;"><button class="btn btn-danger" onclick="deleteDriver(${driver.id})">SMAZAT</button></td>
+                    <td style="color: var(--gold); font-family: 'Bebas Neue'; font-size: 20px;">${index + 1}.</td>
+                    <td>
+                        <input type="text" class="input-dark" value="${driver.name}" onchange="updateDriver(${driver.id}, 'name', this.value)">
+                    </td>
+                    <td>
+                        <input type="number" class="input-dark" value="${driver.wins}" onchange="updateDriver(${driver.id}, 'wins', this.value)" style="width: 80px;">
+                    </td>
+                    <td>
+                        <input type="number" class="input-dark" value="${driver.podiums}" onchange="updateDriver(${driver.id}, 'podiums', this.value)" style="width: 80px;">
+                    </td>
+                    <td>
+                        <input type="number" class="input-dark" value="${driver.points}" onchange="updateDriver(${driver.id}, 'points', this.value)" style="width: 100px; color: var(--gold);">
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn btn-danger" onclick="deleteDriver(${driver.id})">SMAZAT</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Aktualizace dat v poli při změně v inputu
-        window.updateDriver = (id, f, v) => {
-            const d = driversData.find(x => x.id === id);
-            if(d) d[f] = f === 'name' ? v : parseInt(v) || 0;
-        };
-
-        // Mazání jezdce
-        window.deleteDriver = (id) => {
-            if(confirm('Opravdu smazat jezdce?')) { 
-                driversData = driversData.filter(x => x.id !== id); 
-                renderTable(); 
+        // Úprava existujícího jezdce
+        window.updateDriver = function(id, field, value) {
+            const driver = driversData.find(d => d.id === id);
+            if(driver) {
+                driver[field] = (field === 'name') ? value : parseInt(value) || 0;
             }
         };
 
-        // Přidání nového jezdce
-        document.getElementById('add-btn').onclick = () => {
+        // Smazání jezdce
+        window.deleteDriver = function(id) {
+            if(confirm('Opravdu chceš tohoto jezdce smazat?')) {
+                driversData = driversData.filter(d => d.id !== id);
+                renderTable();
+            }
+        };
+
+        // Přidání nového jezdce tlačítkem
+        document.getElementById('add-btn').addEventListener('click', () => {
             const name = document.getElementById('new-name').value;
-            if(!name) return alert('Zadej jméno jezdce!');
-            
-            driversData.push({
-                id: Date.now(), // Unikátní ID
-                name: name,
-                wins: parseInt(document.getElementById('new-wins').value) || 0,
-                podiums: parseInt(document.getElementById('new-podiums').value) || 0,
-                points: parseInt(document.getElementById('new-points').value) || 0
-            });
-            renderTable();
-        };
+            const wins = parseInt(document.getElementById('new-wins').value) || 0;
+            const podiums = parseInt(document.getElementById('new-podiums').value) || 0;
+            const points = parseInt(document.getElementById('new-points').value) || 0;
 
-        // Tlačítko ULOŽIT ZMĚNY NA WEB
-        document.getElementById('save-all-btn').onclick = async () => {
-            const btn = document.getElementById('save-all-btn');
-            btn.textContent = 'UKLÁDÁM...';
-            
-            try {
-                const res = await fetch('/api/leaderboard', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(driversData)
-                });
-                
-                if(res.ok) {
-                    alert('Data byla úspěšně uložena a nahrána na web!');
-                } else {
-                    alert('Chyba! Pravděpodobně nemáš oprávnění organizátora.');
-                }
-            } catch(e) {
-                alert('Chyba při komunikaci se serverem.');
+            if (name.trim() === '') {
+                alert('Zadej jméno jezdce!');
+                return;
             }
+
+            const newId = driversData.length > 0 ? Math.max(...driversData.map(d => d.id)) + 1 : 1;
             
-            btn.textContent = 'ULOŽIT ZMĚNY NA WEB';
-        };
+            driversData.push({ id: newId, name, wins, podiums, points });
+            
+            // Vyčištění políček
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-wins').value = '';
+            document.getElementById('new-podiums').value = '';
+            document.getElementById('new-points').value = '';
+
+            renderTable(); // Překreslení se srovnáním
+        });
+
+        // Uložení (Zatím ukázka, co budeme dělat dál)
+        document.getElementById('save-all-btn').addEventListener('click', () => {
+            // Tady v budoucnu pošleme 'driversData' na náš server (do server.js)
+            alert('🛠 Tlačítko funguje! V dalším kroku naprogramujeme server.js, aby tahle data trvale uložil a propsal na hlavní stránku index.html.');
+        });
+
     </script>
 </body>
 </html>
