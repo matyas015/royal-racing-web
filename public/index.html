@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Racing | FiveM Roleplay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #e2b659;
+            --dark: #0f0f0f;
+            --darker: #050505;
+            --gray: #1a1a1a;
+            --text: #d4d4d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        h1, h2, h3, .bebas {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+        }
+        
+        a { text-decoration: none; color: inherit; transition: 0.2s ease-in-out; }
+
+        /* === Plynulý Scrollbar === */
+        #rpmBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold) 0%, #ff3333 100%);
+            z-index: 10000;
+            box-shadow: 0 0 10px rgba(226, 182, 89, 0.5);
+            transition: width 0.1s;
+        }
+
+        /* === STARTOVACÍ SEMAFOR === */
+        .start-lights {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 2px solid #222;
+            z-index: 9999;
+            pointer-events: none;
+            animation: hideLights 1s forwards 3.5s;
+        }
+        .light {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: #222;
+            box-shadow: inset 0 0 10px #000;
+        }
+        .light:nth-child(1) { animation: redLight 0.1s forwards 0.5s; }
+        .light:nth-child(2) { animation: redLight 0.1s forwards 1.2s; }
+        .light:nth-child(3) { animation: redLight 0.1s forwards 1.9s; }
+        .light.green { animation: greenLight 0.1s forwards 2.6s; }
+
+        @keyframes redLight { to { background: #ff2a2a; box-shadow: 0 0 25px #ff2a2a; } }
+        @keyframes greenLight { to { background: #2aff2a; box-shadow: 0 0 35px #2aff2a; } }
+        @keyframes hideLights { to { opacity: 0; transform: translateX(-50%) translateY(-50px); } }
+        
+        /* === NAVIGACE (Změněno na position: absolute) === */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5vw;
+            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.95), rgba(5, 5, 5, 0));
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 26px;
+            color: var(--gold);
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(226, 182, 89, 0.3);
+        }
+        .logo img { height: 45px; }
+        
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+        .nav-links a:hover { color: var(--gold); text-shadow: 0 0 8px rgba(226, 182, 89, 0.5); }
+        
+        .discord-btn-nav {
+            border: 2px solid var(--gold);
+            padding: 10px 25px;
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(226, 182, 89, 0.1);
+        }
+        .discord-btn-nav:hover {
+            background: var(--gold);
+            color: var(--darker);
+            box-shadow: 0 0 20px rgba(226, 182, 89, 0.4);
+        }
+
+        /* === HERO SEKCE === */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(5,5,5,0.6), rgba(5,5,5,0.9)), url('BackGround1.png') no-repeat center center/cover;
+            position: relative;
+        }
+
+        .hero-content-wrapper {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ŠACHOVNICOVÝ PRAPOR JAKO SPODNÍ LINKA */
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 12px;
+            background-image: 
+                linear-gradient(45deg, var(--gold) 25%, transparent 25%, transparent 75%, var(--gold) 75%, var(--gold)),
+                linear-gradient(45deg, var(--gold) 25%, transparent 25%, transparent 75%, var(--gold) 75%, var(--gold));
+            background-color: var(--darker);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            z-index: 3;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.8);
+        }
+
+        .hero-subtitle {
+            color: var(--gold);
+            font-size: 11px;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 800;
+            border: 1px solid rgba(226, 182, 89, 0.4);
+            padding: 8px 25px;
+            background: rgba(0,0,0,0.5);
+        }
+        .hero h1 {
+            font-size: 150px;
+            line-height: 0.85;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-shadow: 0 5px 30px rgba(226, 182, 89, 0.25);
+        }
+        .hero-desc {
+            font-size: 15px;
+            letter-spacing: 4px;
+            margin-bottom: 55px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #aaa;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        /* ENGINE SHAKE NA TLAČÍTKU */
+        @keyframes engineShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-2px, -1px) rotate(-1deg); }
+            40% { transform: translate(-1px, 2px) rotate(1deg); }
+            60% { transform: translate(2px, -2px) rotate(0deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            100% { transform: translate(1px, 2px) rotate(-1deg); }
+        }
+
+        .btn-primary {
+            background: var(--gold);
+            color: var(--darker);
+            padding: 18px 45px;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .btn-primary:hover { 
+            background: #f7ce74; 
+            box-shadow: 0 0 25px rgba(226, 182, 89, 0.6); 
+            animation: engineShake 0.15s infinite; 
+        }
+        
+        .btn-secondary {
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 18px 45px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover { 
+            border-color: var(--gold); 
+            color: var(--gold); 
+            background: rgba(226, 182, 89, 0.05);
+        }
+
+        .stats {
+            position: absolute;
+            bottom: 60px;
+            display: flex;
+            gap: 120px;
+            z-index: 2;
+        }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 48px;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px rgba(226, 182, 89, 0.2);
+        }
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #666;
+            font-weight: 800;
+        }
+
+        /* === SEKCE OBECNĚ === */
+        .section { padding: 100px 10vw; position: relative; }
+        .section-header { margin-bottom: 50px; text-align: center; }
+        .section-subtitle {
+            color: var(--gold);
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        .section-title {
+            font-size: 80px;
+            line-height: 0.9;
+            color: #fff;
+        }
+        .section-title span { color: var(--gold); }
+
+        /* === ŽEBŘÍČEK === */
+        .leaderboard-container { max-width: 1000px; margin: 0 auto; }
+        .leaderboard-table { width: 100%; border-collapse: separate; border-spacing: 0 5px; }
+        .leaderboard-table th {
+            padding: 15px 30px; text-align: left; color: #666; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 2px; font-weight: 800;
+        }
+        .leaderboard-table td {
+            padding: 20px 30px; background: var(--dark);
+            border-top: 1px solid rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            transition: all 0.3s ease;
+        }
+        .leaderboard-table tr:hover td { 
+            background: rgba(226, 182, 89, 0.05); 
+            border-color: rgba(226, 182, 89, 0.2);
+            transform: scale(1.01); 
+        }
+        .rank { color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 24px; width: 60px; }
+        .driver { display: flex; align-items: center; gap: 15px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+        .driver-icon { width: 30px; height: 30px; border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--gold); }
+        .stats-col { color: #888; font-weight: 600; font-size: 14px; }
+        .points { color: var(--gold); font-weight: 900; font-size: 18px; text-align: right; }
+
+        footer {
+            text-align: center; padding: 40px; background: #020202;
+            border-top: 1px solid rgba(255,255,255,0.05); color: #444;
+            font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rpmBar"></div>
+
+    <div class="start-lights">
+        <div class="light red"></div>
+        <div class="light red"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+    </div>
+
+    <nav>
+        <div class="logo">
+            <img src="Royal Racing Logo.png" alt="Royal Racing Logo">
+            ROYAL RACING
+        </div>
+        <div class="nav-links">
+            <a href="index.html#zebricek">Žebříček</a>
+            <a href="pravidla.html">Pravidla</a>
+            <a href="https://discord.gg/5MyMShFABA" target="_blank">Discord</a>
+        </div>
+            <a href="https://discord.gg/5MyMShFABA" class="discord-btn-nav" target="_blank">PŘIDAT SE DO CREW</a>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content-wrapper">
+            <span class="hero-subtitle">♦ FIVEM ROLEPLAY – GRAND SENORA RACEWAY ♦</span>
+            <h1>ROYAL<br>RACING</h1>
+            <div class="hero-desc">KDE RYCHLOST POTKÁVÁ PRESTIŽ</div>
+            
+            <div class="hero-buttons">
+                <a href="/auth/discord" class="discord-btn-nav">PŘIHLÁSIT SE PŘES DISCORD</a>
+                <a href="#zebricek" class="btn-secondary">ZOBRAZIT ŽEBŘÍČEK</a>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">200+</div>
+                <div class="stat-label">Jezdců</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Sezón</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1200+</div>
+                <div class="stat-label">Závodů</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="zebricek" class="section">
+        <div class="section-header">
+            <span class="section-subtitle">— SEZÓNA 2026</span>
+            <h2 class="section-title">ŽEBŘÍČEK<br><span>JEZDCŮ</span></h2>
+        </div>
+        
+        <div class="leaderboard-container">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Jezdec</th>
+                        <th>Výhry</th>
+                        <th>Pódia</th>
+                        <th style="text-align: right;">Body</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="rank">👑</td>
+                        <td class="driver"><div class="driver-icon">V</div> VIKTOR_CZ</td>
+                        <td class="stats-col">47</td>
+                        <td class="stats-col">61</td>
+                        <td class="points">2 840</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">2.</td>
+                        <td class="driver"><div class="driver-icon">S</div> SpeedKing99</td>
+                        <td class="stats-col">39</td>
+                        <td class="stats-col">55</td>
+                        <td class="points">2 610</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">3.</td>
+                        <td class="driver"><div class="driver-icon">M</div> MadMax_SK</td>
+                        <td class="stats-col">34</td>
+                        <td class="stats-col">50</td>
+                        <td class="points">2 390</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">4.</td>
+                        <td class="driver"><div class="driver-icon">D</div> DriftLord</td>
+                        <td class="stats-col">28</td>
+                        <td class="stats-col">44</td>
+                        <td class="points">2 100</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">5.</td>
+                        <td class="driver"><div class="driver-icon">N</div> NightCrawler</td>
+                        <td class="stats-col">24</td>
+                        <td class="stats-col">38</td>
+                        <td class="points">1 870</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 ROYAL RACING ASSOCIATION. Kde rychlost potkává prestiž.
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('rpmBar').style.width = scrolled + '%';
+        });
+    </script>
+</body>
+</html>

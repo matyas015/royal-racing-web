@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Závodní Kodex | Royal Racing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #e2b659;
+            --dark: #0f0f0f;
+            --darker: #050505;
+            --gray: #1a1a1a;
+            --text: #d4d4d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--darker);
+            color: var(--text);
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        h1, h2, h3, h4, .bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
+        a { text-decoration: none; color: inherit; transition: 0.2s ease-in-out; }
+        
+        /* Plynulý Scrollbar */
+        #rpmBar {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(90deg, var(--gold) 0%, #ff3333 100%);
+            z-index: 10000; box-shadow: 0 0 10px rgba(226, 182, 89, 0.4); transition: width 0.1s;
+        }
+
+        /* === NAVIGACE (Změněno na position: absolute) === */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 5vw; background: rgba(5, 5, 5, 0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: absolute; width: 100%; top: 0; z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .logo { display: flex; align-items: center; gap: 15px; font-size: 26px; color: var(--gold); font-family: 'Bebas Neue', sans-serif; letter-spacing: 3px; }
+        .logo img { height: 45px; }
+        .nav-links { display: flex; gap: 40px; font-size: 13px; text-transform: uppercase; font-weight: 800; letter-spacing: 1.5px; }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-links a.active { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 5px; }
+        
+        .discord-btn-nav { border: 2px solid var(--gold); padding: 10px 25px; color: var(--gold); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .discord-btn-nav:hover { background: var(--gold); color: var(--darker); }
+
+        /* Hlavička dokumentu */
+        .doc-header {
+            padding: 180px 5vw 80px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(15,15,15,0.8), var(--darker));
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .doc-header h1 {
+            font-size: 55px; color: #fff; margin-bottom: 20px; line-height: 1.1;
+        }
+        .doc-header h1 span { color: var(--gold); }
+        .doc-header p {
+            font-size: 15px; color: #888; max-width: 800px; margin: 0 auto; font-style: italic; line-height: 1.6;
+        }
+
+        /* Hlavní rozložení (Sidebar + Obsah) */
+        .layout-wrapper {
+            display: flex;
+            gap: 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 5vw;
+            position: relative;
+            align-items: flex-start;
+        }
+
+        /* Boční menu */
+        .sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 40px; /* Upraveno, jelikož navigace nahoře už nezavazí */
+            background: rgba(10, 10, 10, 0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 4px;
+            padding: 20px 0;
+        }
+        .sidebar-title {
+            font-size: 12px; color: #555; text-transform: uppercase; letter-spacing: 2px; font-weight: 800;
+            padding: 0 25px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;
+        }
+        .sidebar-nav a {
+            display: block; padding: 12px 25px; color: #999; font-size: 13px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; border-left: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .sidebar-nav a:hover { color: #fff; background: rgba(255,255,255,0.02); }
+        .sidebar-nav a.active { color: var(--gold); border-left-color: var(--gold); background: rgba(226, 182, 89, 0.05); }
+
+        /* Obsah dokumentu */
+        .content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .doc-section {
+            margin-bottom: 80px;
+            scroll-margin-top: 40px; /* Upraveno odsazení odshora */
+        }
+        .doc-section:last-child { margin-bottom: 0; }
+        
+        .doc-section h2 {
+            font-size: 40px; color: var(--gold); margin-bottom: 30px; padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Obyčejný text pod nadpisem */
+        .doc-text {
+            font-size: 16px; color: #ccc; line-height: 1.8; margin-bottom: 25px; font-weight: 500;
+        }
+        .doc-quote {
+            font-size: 18px; color: var(--gold); font-style: italic; font-weight: 700;
+            border-left: 3px solid var(--gold); padding: 15px 25px; margin: 30px 0;
+            background: rgba(226, 182, 89, 0.05);
+        }
+
+        /* Bloky pravidel */
+        .rule-block {
+            background: rgba(15, 15, 15, 0.7);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-left: 3px solid transparent;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .rule-block:hover {
+            border-left-color: var(--gold);
+            background: rgba(20, 20, 20, 0.9);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .rule-block h4 {
+            font-size: 20px; color: #fff; margin-bottom: 15px; font-family: 'Montserrat', sans-serif;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .rule-block p {
+            font-size: 15px; color: #aaa; line-height: 1.7; margin-bottom: 15px; font-weight: 500;
+        }
+        .rule-block p:last-child { margin-bottom: 0; }
+        .rule-block ul {
+            margin-left: 20px;
+        }
+        .rule-block li {
+            font-size: 15px; color: #aaa; line-height: 1.7; margin-bottom: 8px; font-weight: 500;
+        }
+        .rule-block li::marker { color: var(--gold); }
+
+        /* Závěrečný podpis */
+        .signature-box {
+            margin-top: 50px; text-align: right; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 30px;
+        }
+        .signature-date { color: #888; font-size: 13px; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
+        .signature-name { color: var(--gold); font-size: 18px; font-weight: 800; font-family: 'Montserrat', sans-serif;}
+
+        footer { text-align: center; padding: 40px; background: #020202; border-top: 1px solid rgba(255,255,255,0.05); color: #444; font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* Responzivita */
+        @media (max-width: 1024px) {
+            .layout-wrapper { flex-direction: column; }
+            .sidebar { width: 100%; position: static; margin-bottom: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="rpmBar"></div>
+
+    <nav>
+        <div class="logo">
+            <a href="index.html" style="display:flex; align-items:center; gap:15px;">
+                <img src="Royal Racing Logo.png" alt="Royal Racing Logo">
+                ROYAL RACING
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Domů</a>
+            <a href="index.html#zebricek">Žebříček</a>
+            <a href="pravidla.html" class="active">Pravidla</a>
+            <a href="https://discord.gg/5MyMShFABA" target="_blank">Discord</a>
+        </div>
+        <a href="https://discord.gg/5MyMShFABA" class="discord-btn-nav" target="_blank">PŘIDAT SE DO CREW</a>
+    </nav>
+
+    <div class="doc-header">
+        <h1>🏁 ROYAL RACING ASSOCIATION<br><span>ZÁVODNÍ KODEX A ZÁKONÍK DRÁHY</span></h1>
+        <p>📜 Oficiální dokument vydaný Královskou závodní asociací města Los Santos (Royal Racing Association), platný pro všechny členy, jezdce a technický personál.</p>
+    </div>
+
+    <div class="layout-wrapper">
+        
+        <!-- Boční Navigace pro lepší přehlednost -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Obsah dokumentu</div>
+            <div class="sidebar-nav">
+                <a href="#sec-1" class="active">I. Základní principy</a>
+                <a href="#sec-2">II. Struktura organizace</a>
+                <a href="#sec-3">III. Registrace a účast</a>
+                <a href="#sec-4">IV. Závodní kodex</a>
+                <a href="#sec-5">V. Bezpečnost</a>
+                <a href="#sec-6">VI. Disciplíny</a>
+                <a href="#sec-7">VII. Kultura a chování</a>
+                <a href="#sec-8">VIII. Porušení kodexu</a>
+                <a href="#sec-9">IX. Závěrečné ustanovení</a>
+            </div>
+        </aside>
+
+        <!-- Hlavní obsah -->
+        <main class="content">
+            
+            <!-- SEKCE I -->
+            <section id="sec-1" class="doc-section">
+                <h2>I. ZÁKLADNÍ PRINCIPY RACINGU</h2>
+                <div class="doc-text">
+                    <p>Royal Racing Association (RRA) je prestižní závodní organizace, která spojuje všechny milovníky rychlosti, přesnosti a respektu k motorismu.</p>
+                    <p>Každý, kdo vstoupí na naši trať, přijímá závazek dodržovat čest závodníka a ducha soutěže.</p>
+                </div>
+                
+                <div class="rule-block">
+                    <h4>Naším cílem je:</h4>
+                    <ul>
+                        <li>rozvíjet motoristickou kulturu,</li>
+                        <li>podporovat čistou soutěživost,</li>
+                        <li>zajistit bezpečné a férové závody,</li>
+                        <li>a přinášet městu Los Santos legendy motorsportu.</li>
+                    </ul>
+                </div>
+                
+                <div class="doc-quote">„Rychlost nestačí. Musíš mít i srdce, které ji dokáže ovládnout.“</div>
+            </section>
+
+            <!-- SEKCE II -->
+            <section id="sec-2" class="doc-section">
+                <h2>II. STRUKTURA A FUNKCE ORGANIZACE</h2>
+                
+                <div class="rule-block">
+                    <h4>🏛 1. Dohled</h4>
+                    <p>Dohled je oficiální orgán Royal Racing Association. Zodpovídá za průběh závodů, organizaci, pravidla a spravedlivé posuzování situací na trati. Jeho rozhodnutí jsou konečná a závazná pro všechny účastníky.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>⚙️ 2. Organizátoři</h4>
+                    <p>Organizují závody, stanovují tratě, určují harmonogram a kontrolují technický stav vozidel. Bez jejich pokynu nesmí žádný závod začít.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🏎 3. Závodníci</h4>
+                    <p>Jádro celé asociace. Každý jezdec je reprezentantem Royal Racing a jeho chování odráží čest celé komunity. Závodník má povinnost:</p>
+                    <ul>
+                        <li>dodržovat závodní kodex,</li>
+                        <li>respektovat rozhodnutí Dohledu,</li>
+                        <li>zachovat sportovní chování i po závodě.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🔧 4. Tuning Teamy</h4>
+                    <p>Mechanici, inženýři a technici, kteří zajišťují servis závodních vozidel. Bez jejich práce by žádný závodník nevyjel na trať. Jsou považováni za nedílnou součást týmu.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>👁 5. Diváci</h4>
+                    <p>Každý fanoušek, který sleduje závody, je vítanou součástí atmosféry. Diváci musí zůstat mimo trať a dodržovat pokyny pořadatelů. Rušení závodu, vstup na trať či narušování závodníků je považováno za přestupek proti kodexu.</p>
+                </div>
+            </section>
+
+            <!-- SEKCE III -->
+            <section id="sec-3" class="doc-section">
+                <h2>III. REGISTRACE A ÚČAST V ZÁVODECH</h2>
+                
+                <div class="rule-block">
+                    <h4>📋 1. Přihlášení jezdce</h4>
+                    <p>Každý jezdec se před závodem registruje u organizátorů. Registrace musí obsahovat:</p>
+                    <ul>
+                        <li>jméno a příjmení závodníka,</li>
+                        <li>datum narození,</li>
+                        <li>zkušenosti se závoděním.</li>
+                    </ul>
+                    <p>Po přijetí je závodník zapsán do sezóny a může být přidělen ke konkrétním disciplínám.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🕒 2. Dochvilnost</h4>
+                    <p>Závodník je povinen dostavit se na místo závodu ve stanovený čas. Zpoždění bez ohlášení může znamenat ztrátu startovní pozice.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🚗 3. Technická kontrola</h4>
+                    <p>Každé vozidlo prochází kontrolou technického stavu před startem. Neschválené nebo nebezpečné úpravy jsou důvodem k vyřazení z akce.</p>
+                </div>
+            </section>
+
+            <!-- SEKCE IV -->
+            <section id="sec-4" class="doc-section">
+                <h2>IV. ZÁVODNÍ KODEX</h2>
+                
+                <div class="rule-block">
+                    <h4>🏁 1. Fair Play</h4>
+                    <ul>
+                        <li>Úmyslné narážení, blokování nebo vytlačování soupeře z trati je přísně zakázáno.</li>
+                        <li>Pokud dojde ke kontaktu, závodník je povinen zpomalit a umožnit soupeři návrat na trať.</li>
+                        <li>Vítězství má hodnotu pouze tehdy, pokud je dosaženo čestně.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>⚙️ 2. Respekt k trati</h4>
+                    <ul>
+                        <li>Každý závodník je povinen držet se vyznačené trasy.</li>
+                        <li>Zkracování, objíždění kontrolních bodů nebo záměrné využívání zkratek je považováno za porušení kodexu.</li>
+                        <li>Poškození tratě nebo zázemí závodu je trestné.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🧠 3. Sebeovládání</h4>
+                    <ul>
+                        <li>Jezdec musí jednat rozvážně, s chladnou hlavou.</li>
+                        <li>Agresivní jízda bez kontroly ohrožuje ostatní a snižuje prestiž Royal Racing.</li>
+                        <li>Po závodě se očekává profesionální chování, i v případě neúspěchu.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🛠 4. Odpovědnost za vozidlo</h4>
+                    <ul>
+                        <li>Každý jezdec ručí za své vozidlo.</li>
+                        <li>Mechanické závady během závodu nejsou důvodem pro restart.</li>
+                        <li>Vozidla musí být připravena a schopna dokončit závod bez externí pomoci.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEKCE V -->
+            <section id="sec-5" class="doc-section">
+                <h2>V. BEZPEČNOST A POVINNOSTI</h2>
+                
+                <div class="rule-block">
+                    <h4>🚨 1. Ochranná výbava</h4>
+                    <p>Každý závodník musí mít helmu, kombinézu a další předepsané vybavení. Bezpečnost je na prvním místě.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🩹 2. Nehody</h4>
+                    <p>V případě kolize nebo nehody je závodník povinen:</p>
+                    <ul>
+                        <li>zůstat na místě nehody,</li>
+                        <li>upozornit ostatní závodníky,</li>
+                        <li>vyčkat na příjezd pořadatele nebo technické pomoci.</li>
+                    </ul>
+                    <p>Útěk z místa nehody je považován za závažné porušení kodexu.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🔥 3. Oheň a únik kapalin</h4>
+                    <p>V případě požáru nebo úniku paliva musí závodník okamžitě zastavit, vystoupit a informovat okolí.</p>
+                </div>
+            </section>
+
+            <!-- SEKCE VI -->
+            <section id="sec-6" class="doc-section">
+                <h2>VI. DISCIPLÍNY</h2>
+                
+                <div class="rule-block">
+                    <h4>🏎 1. Rally</h4>
+                    <ul>
+                        <li>Probíhá na uzavřených tratích, většinou v přírodním terénu.</li>
+                        <li>Závodí se proti času, nikoli přímo proti soupeři.</li>
+                        <li>Důraz se klade na přesnost, navigaci a konzistentní jízdu.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>💨 2. Drift</h4>
+                    <ul>
+                        <li>Cílem je kontrolovaný smyk s maximálním úhlem a stylem.</li>
+                        <li>Hodnotí se plynulost, kontrola, linie a kouř.</li>
+                        <li>Každý jezdec má předem daný počet jízd, které se bodují porotou.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🚦 3. Drag Race</h4>
+                    <ul>
+                        <li>Přímý souboj dvou jezdců na krátké trati.</li>
+                        <li>Rozhoduje reakce na start, přesnost a čas v cíli.</li>
+                        <li>Každý start musí být potvrzen světelnou signalizací nebo pokynem pořadatele.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🏆 4. Turnaje a Sezóny</h4>
+                    <ul>
+                        <li>Probíhají ve formě ligových sérií.</li>
+                        <li>Bodový systém odměňuje konzistentní výsledky, nejen vítězství.</li>
+                        <li>Na konci sezóny je vyhlášen Mistr Royal Racing.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEKCE VII -->
+            <section id="sec-7" class="doc-section">
+                <h2>VII. KULTURA A CHOVÁNÍ</h2>
+                
+                <div class="rule-block">
+                    <h4>🎙 1. Projevy</h4>
+                    <p>Závodník se má vyjadřovat slušně, reprezentativně a s respektem. Znevažování soupeřů, urážky nebo vychloubání se považují za neetické.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🤝 2. Vztahy mezi jezdci</h4>
+                    <p>Na trati soupeři, mimo ni přátelé. RRA podporuje spolupráci a respekt – ne rivalitu, která přerůstá v nenávist.</p>
+                </div>
+
+                <div class="rule-block">
+                    <h4>🎯 3. Média a fanoušci</h4>
+                    <p>Fotky, rozhovory a mediální výstupy jsou vítány, pokud nepůsobí škodlivě pro jméno Royal Racing. Každý závodník je ambasadorem značky.</p>
+                </div>
+            </section>
+
+            <!-- SEKCE VIII -->
+            <section id="sec-8" class="doc-section">
+                <h2>VIII. PORUŠENÍ KODEXU</h2>
+                <div class="doc-text">
+                    <p>Porušení závodního kodexu vede k sankcím stanoveným Dohledem Royal Racing.</p>
+                </div>
+                
+                <div class="rule-block">
+                    <h4>Typy sankcí:</h4>
+                    <ul>
+                        <li>Napomenutí,</li>
+                        <li>Ztráta bodů v sérii,</li>
+                        <li>Vyloučení ze závodu,</li>
+                        <li>Zákaz účasti v budoucích akcích.</li>
+                    </ul>
+                    <p style="margin-top: 15px; font-style: italic; color: var(--gold);">Všechny sankce jsou IC – tedy v rámci světa a organizace Royal Racing.</p>
+                </div>
+            </section>
+
+            <!-- SEKCE IX -->
+            <section id="sec-9" class="doc-section">
+                <h2>IX. ZÁVĚREČNÉ USTANOVENÍ</h2>
+                <div class="doc-text">
+                    <p>Royal Racing Association si zakládá na čestném jménu, tradici a profesionalitě. Každý, kdo nosí barvy RRA, nese odpovědnost za reputaci celé organizace.</p>
+                </div>
+                <div class="doc-quote">„Není důležité, jak rychle jedeš – ale jak závodíš.“</div>
+                
+                <div class="signature-box">
+                    <div class="signature-date">Podepsáno dne 3. května 2026</div>
+                    <div class="signature-name">🏁 Royal Racing Association<br><span style="font-size: 13px; font-weight: 500; color: #888;">Závodní rada města Los Santos</span></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <footer>&copy; 2026 ROYAL RACING ASSOCIATION. Kde rychlost potkává prestiž.</footer>
+
+    <script>
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('rpmBar').style.width = scrolled + '%';
+        });
+
+        // Automatické zvýraznění menu podle toho, kde zrovna jsi na stránce
+        document.addEventListener("DOMContentLoaded", () => {
+            const sections = document.querySelectorAll(".doc-section");
+            const navLinks = document.querySelectorAll(".sidebar-nav a");
+
+            window.addEventListener("scroll", () => {
+                let current = "";
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    // Úprava offsetu pro přesnější zvýrazňování
+                    if (scrollY >= sectionTop - 100) {
+                        current = section.getAttribute("id");
+                    }
+                });
+
+                navLinks.forEach((link) => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("href").includes(current)) {
+                        link.classList.add("active");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
