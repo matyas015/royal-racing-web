@@ -52,7 +52,7 @@
         .nav-links a:hover { color: var(--gold); }
         .nav-links a.active { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 5px; }
         
-        .discord-btn-nav { border: 2px solid var(--gold); padding: 10px 25px; color: var(--gold); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;}
+        .discord-btn-nav { border: 2px solid var(--gold); padding: 10px 25px; color: var(--gold); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; transition: all 0.3s; }
         .discord-btn-nav:hover { background: var(--gold); color: var(--darker); }
 
         /* Hlavička dokumentu */
@@ -176,6 +176,55 @@
             .layout-wrapper { flex-direction: column; }
             .sidebar { width: 100%; position: static; margin-bottom: 30px; }
         }
+
+        /* ========================================= */
+        /* === NOVÝ PROFI PROFIL & DROP DOWN MENU === */
+        /* ========================================= */
+        .profile-container { position: relative; display: inline-block; }
+        .profile-btn {
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            padding: 5px 15px 5px 5px; border-radius: 40px;
+            background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px); transition: all 0.2s ease;
+        }
+        .profile-btn:hover { background: rgba(25, 25, 25, 0.9); border-color: rgba(255,255,255,0.2); }
+        .profile-btn img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+        .profile-btn .name { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; color: #fff; }
+        .profile-btn .arrow { font-size: 10px; color: #888; transition: transform 0.3s; margin-left: 5px; }
+        .profile-container.active .arrow { transform: rotate(180deg); }
+        
+        .dropdown {
+            position: absolute; top: calc(100% + 15px); right: 0;
+            background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;
+            width: 240px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000;
+            overflow: hidden;
+        }
+        .profile-container.active .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+        
+        .dropdown-header {
+            padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 5px;
+        }
+        .role-title { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #666; font-weight: 800; }
+        .role-badge {
+            display: inline-block; padding: 4px 10px; border-radius: 4px;
+            font-size: 11px; font-weight: 800; letter-spacing: 1px; width: fit-content;
+            text-transform: uppercase;
+        }
+        
+        .dropdown-body { padding: 10px 0; }
+        .dropdown-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+            color: #aaa; font-size: 13px; font-weight: 600; text-decoration: none;
+            transition: all 0.2s; border-left: 2px solid transparent;
+        }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; padding-left: 25px; }
+        .dropdown-item i { font-style: normal; font-size: 16px; opacity: 0.8; }
+        .item-admin:hover { border-left-color: #ff3333; color: #ff3333; background: rgba(255, 51, 51, 0.05); }
+        .item-logout { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; padding-top: 15px; }
     </style>
 </head>
 <body>
@@ -196,7 +245,6 @@
             <a href="https://discord.gg/5MyMShFABA" target="_blank">Discord</a>
         </div>
 
-        <!-- ZDE JE ZMĚNA PRO PŘIHLÁŠENÍ -->
         <div id="auth-container">
             <a href="/auth/discord" class="discord-btn-nav">PŘIHLÁSIT SE</a>
         </div>
@@ -226,7 +274,6 @@
 
         <main class="content">
             
-            <!-- SEKCE I -->
             <section id="sec-1" class="doc-section">
                 <h2>I. ZÁKLADNÍ PRINCIPY RACINGU</h2>
                 <div class="doc-text">
@@ -247,7 +294,6 @@
                 <div class="doc-quote">„Rychlost nestačí. Musíš mít i srdce, které ji dokáže ovládnout.“</div>
             </section>
 
-            <!-- SEKCE II -->
             <section id="sec-2" class="doc-section">
                 <h2>II. STRUKTURA A FUNKCE ORGANIZACE</h2>
                 
@@ -282,7 +328,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE III -->
             <section id="sec-3" class="doc-section">
                 <h2>III. REGISTRACE A ÚČAST V ZÁVODECH</h2>
                 
@@ -308,7 +353,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE IV -->
             <section id="sec-4" class="doc-section">
                 <h2>IV. ZÁVODNÍ KODEX</h2>
                 
@@ -349,7 +393,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE V -->
             <section id="sec-5" class="doc-section">
                 <h2>V. BEZPEČNOST A POVINNOSTI</h2>
                 
@@ -375,7 +418,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE VI -->
             <section id="sec-6" class="doc-section">
                 <h2>VI. DISCIPLÍNY</h2>
                 
@@ -416,7 +458,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE VII -->
             <section id="sec-7" class="doc-section">
                 <h2>VII. KULTURA A CHOVÁNÍ</h2>
                 
@@ -436,7 +477,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE VIII -->
             <section id="sec-8" class="doc-section">
                 <h2>VIII. PORUŠENÍ KODEXU</h2>
                 <div class="doc-text">
@@ -455,7 +495,6 @@
                 </div>
             </section>
 
-            <!-- SEKCE IX -->
             <section id="sec-9" class="doc-section">
                 <h2>IX. ZÁVĚREČNÉ USTANOVENÍ</h2>
                 <div class="doc-text">
@@ -483,7 +522,7 @@
             document.getElementById('rpmBar').style.width = scrolled + '%';
         });
 
-        // Automatické zvýraznění menu podle toho, kde zrovna jsi na stránce
+        // Automatické zvýraznění menu
         document.addEventListener("DOMContentLoaded", () => {
             const sections = document.querySelectorAll(".doc-section");
             const navLinks = document.querySelectorAll(".sidebar-nav a");
@@ -506,7 +545,9 @@
             });
         });
 
-        // DISCORD PŘIHLÁŠENÍ LOGIKA (Stejné jako v index.html)
+        // ==========================================
+        // SYSTÉM ROLÍ A PŘIHLÁŠENÍ (PRAVIDLA)
+        // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             const authContainer = document.getElementById('auth-container');
 
@@ -515,23 +556,73 @@
                 
                 if (response.ok) {
                     const user = await response.json();
+                    
                     const avatarUrl = user.avatar 
                         ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` 
                         : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
+                    const roleMap = [
+                        { id: '1423786653440540703', name: 'ORGANIZÁTOR', color: '#ff9933', isAdmin: true },
+                        { id: '1423790406738645135', name: 'ZÁVODNÍK', color: '#3399ff', isAdmin: false },
+                        { id: '1423789891296428123', name: 'SPONZOR', color: '#e2b659', isAdmin: false },
+                        { id: '1423790332067315853', name: 'OBČAN', color: '#a6a6a6', isAdmin: false }
+                    ];
+
+                    let userRoleName = 'HOST';
+                    let userRoleColor = '#444444';
+                    let isAdmin = false;
+
+                    for (const role of roleMap) {
+                        if (user.roles.includes(role.id)) {
+                            userRoleName = role.name;
+                            userRoleColor = role.color;
+                            isAdmin = role.isAdmin;
+                            break; 
+                        }
+                    }
+
                     authContainer.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <img src="${avatarUrl}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2b659; object-fit: cover;">
-                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
-                                <span style="color: #e2b659; font-weight: bold; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; font-size: 16px;">
-                                    ${user.username}
-                                </span>
-                                <a href="/logout" style="color: #ffffff; text-decoration: none; font-size: 11px; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
-                                    Odhlásit
-                                </a>
+                        <div class="profile-container" id="profile-container">
+                            <div class="profile-btn" id="profile-btn">
+                                <img src="${avatarUrl}" alt="Avatar">
+                                <span class="name">${user.username}</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="dropdown">
+                                <div class="dropdown-header">
+                                    <span class="role-title">Tvoje pozice</span>
+                                    <div class="role-badge" style="color: ${userRoleColor}; background: ${userRoleColor}15; border: 1px solid ${userRoleColor}50;">
+                                        ${userRoleName}
+                                    </div>
+                                </div>
+                                <div class="dropdown-body">
+                                    <a href="#registrace" class="dropdown-item">
+                                        <i>📝</i> Registrace jezdce
+                                    </a>
+                                    ${isAdmin ? `
+                                        <a href="/admin" class="dropdown-item item-admin">
+                                            <i>⚙️</i> Administrace
+                                        </a>
+                                    ` : ''}
+                                    <a href="/logout" class="dropdown-item item-logout">
+                                        <i>🚪</i> Odhlásit se
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     `;
+
+                    const profileContainer = document.getElementById('profile-container');
+                    const profileBtn = document.getElementById('profile-btn');
+                    
+                    profileBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        profileContainer.classList.toggle('active');
+                    });
+
+                    document.addEventListener('click', () => {
+                        profileContainer.classList.remove('active');
+                    });
                 }
             } catch (err) {
                 console.error('Chyba při komunikaci se serverem:', err);

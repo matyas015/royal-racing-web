@@ -92,6 +92,7 @@
             letter-spacing: 1px;
             box-shadow: 0 0 15px rgba(226, 182, 89, 0.1);
             display: inline-block;
+            transition: all 0.3s;
         }
         .discord-btn-nav:hover {
             background: var(--gold);
@@ -280,120 +281,59 @@
             font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
         }
 
-        /* === PROFI ROZKLIKÁVACÍ MENU === */
-        .profile-wrapper {
-            position: relative;
-            display: inline-block;
-        }
+        /* ========================================= */
+        /* === NOVÝ PROFI PROFIL & DROP DOWN MENU === */
+        /* ========================================= */
         
-        .profile-toggle {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            cursor: pointer;
-            padding: 8px 15px 8px 8px;
-            border-radius: 50px;
-            background: rgba(20, 20, 20, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-        .profile-toggle:hover {
-            background: rgba(30, 30, 30, 0.9);
-            border-color: rgba(226, 182, 89, 0.3);
-            transform: translateY(-1px);
-        }
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .profile-name {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 1.5px;
-            font-size: 18px;
-            line-height: 1;
-        }
-        .profile-hint {
-            font-size: 9px;
-            color: #777;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 4px;
-        }
+        .profile-container { position: relative; display: inline-block; }
         
-        .profile-dropdown {
-            position: absolute;
-            top: calc(100% + 15px);
-            right: 0;
-            background: #0a0a0a;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            width: 260px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.9);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-15px);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 1000;
+        .profile-btn {
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            padding: 5px 15px 5px 5px; border-radius: 40px;
+            background: rgba(15, 15, 15, 0.8); border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px); transition: all 0.2s ease;
+        }
+        .profile-btn:hover { background: rgba(25, 25, 25, 0.9); border-color: rgba(255,255,255,0.2); }
+        .profile-btn img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+        .profile-btn .name { font-weight: 700; font-size: 13px; letter-spacing: 0.5px; color: #fff; }
+        .profile-btn .arrow { font-size: 10px; color: #888; transition: transform 0.3s; margin-left: 5px; }
+        
+        .profile-container.active .arrow { transform: rotate(180deg); }
+        
+        .dropdown {
+            position: absolute; top: calc(100% + 15px); right: 0;
+            background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px;
+            width: 240px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000;
             overflow: hidden;
         }
-        .profile-dropdown.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+        .profile-container.active .dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
         
         .dropdown-header {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 20px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            text-align: center;
+            padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            background: rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 5px;
         }
-        .dropdown-role-label {
-            font-size: 10px;
-            color: #666;
+        .role-title { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #666; font-weight: 800; }
+        
+        .role-badge {
+            display: inline-block; padding: 4px 10px; border-radius: 4px;
+            font-size: 11px; font-weight: 800; letter-spacing: 1px; width: fit-content;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 5px;
-        }
-        .dropdown-role-name {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 24px;
-            letter-spacing: 2px;
         }
         
-        .dropdown-menu {
-            padding: 10px 0;
-        }
+        .dropdown-body { padding: 10px 0; }
         .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 12px 25px;
-            color: #aaa;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
+            display: flex; align-items: center; gap: 12px; padding: 12px 20px;
+            color: #aaa; font-size: 13px; font-weight: 600; text-decoration: none;
+            transition: all 0.2s; border-left: 2px solid transparent;
         }
-        .dropdown-item:hover {
-            background: rgba(255, 255, 255, 0.03);
-            color: #fff;
-            padding-left: 30px;
-        }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.03); color: #fff; padding-left: 25px; }
         
-        .dropdown-item.action-reg:hover { border-left-color: var(--gold); color: var(--gold); }
-        .dropdown-item.action-admin { color: #ff4d4d; }
-        .dropdown-item.action-admin:hover { border-left-color: #ff4d4d; background: rgba(255, 77, 77, 0.05); }
-        
-        .dropdown-item.action-logout { 
-            color: #666; 
-            border-top: 1px solid rgba(255,255,255,0.05); 
-            margin-top: 5px; 
-            padding-top: 15px;
-        }
-        .dropdown-item.action-logout:hover { color: #fff; border-left-color: #666; }
+        .dropdown-item i { font-style: normal; font-size: 16px; opacity: 0.8; }
+        .item-admin:hover { border-left-color: #ff3333; color: #ff3333; background: rgba(255, 51, 51, 0.05); }
+        .item-logout { border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; padding-top: 15px; }
     </style>
 </head>
 <body>
@@ -411,7 +351,7 @@
             <a href="https://discord.gg/5MyMShFABA" target="_blank">Discord</a>
         </div>
         
-        <!-- ZDE JE ZMĚNA PRO PŘIHLÁŠENÍ -->
+        <!-- Obal pro přihlášení -->
         <div id="auth-container">
             <a href="/auth/discord" class="discord-btn-nav">PŘIHLÁSIT SE</a>
         </div>
@@ -424,7 +364,6 @@
             <div class="hero-desc">KDE RYCHLOST POTKÁVÁ PRESTIŽ</div>
             
             <div class="hero-buttons">
-                <!-- PŘIDÁNO ID "hero-auth-btn" ABYCHOM TO MOHLI MĚNIT -->
                 <a href="/auth/discord" id="hero-auth-btn" class="discord-btn-nav">PŘIHLÁSIT SE PŘES DISCORD</a>
                 <a href="#zebricek" class="btn-secondary">ZOBRAZIT ŽEBŘÍČEK</a>
             </div>
@@ -517,7 +456,9 @@
             document.getElementById('rpmBar').style.width = scrolled + '%';
         });
 
-        // DISCORD PŘIHLÁŠENÍ LOGIKA S ROZKLIKÁVACÍM MENU
+        // ==========================================
+        // SYSTÉM ROLÍ A PŘIHLÁŠENÍ
+        // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             const authContainer = document.getElementById('auth-container');
             const heroAuthBtn = document.getElementById('hero-auth-btn');
@@ -527,74 +468,81 @@
                 
                 if (response.ok) {
                     const user = await response.json();
-
+                    
                     const avatarUrl = user.avatar 
                         ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` 
                         : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
-                    // ======== TADY ZADEJ ID TVÉ DISCORD ROLE PRO ORGANIZÁTORY ========
-                    const ADMIN_ROLE_ID = '1423786653440540703'; 
-                    
-                    const isAdmin = user.roles.includes(ADMIN_ROLE_ID);
+                    // 1. TADY SI NASTAV SVÉ ROLE Z DISCORDU
+                    // Seřaď je od nejdůležitější po nejméně důležitou.
+                    const roleMap = [
+                        { id: '1423786653440540703', name: 'ORGANIZÁTOR', color: '#ff9933', isAdmin: true },
+                        { id: '1423790406738645135', name: 'ZÁVODNÍK', color: '#3399ff', isAdmin: false },
+                        { id: '1423789891296428123', name: 'SPONZOR', color: '#e2b659', isAdmin: false },
+                        { id: '1423790332067315853', name: 'OBČAN', color: '#a6a6a6', isAdmin: false }
+                    ];
 
-                    // Barvy a stíny podle role
-                    const profileColor = isAdmin ? '#ff4d4d' : '#e2b659';
-                    const roleText = isAdmin ? 'ORGANIZÁTOR' : 'JEZDEC';
+                    let userRoleName = 'HOST';
+                    let userRoleColor = '#444444';
+                    let isAdmin = false;
 
-                    // Vygenerování profi struktury menu
+                    for (const role of roleMap) {
+                        if (user.roles.includes(role.id)) {
+                            userRoleName = role.name;
+                            userRoleColor = role.color;
+                            isAdmin = role.isAdmin;
+                            break; 
+                        }
+                    }
+
                     authContainer.innerHTML = `
-                        <div class="profile-wrapper">
-                            <!-- Tlačítko profilu -->
-                            <div id="profile-toggle" class="profile-toggle">
-                                <img src="${avatarUrl}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid ${profileColor}; object-fit: cover; box-shadow: 0 0 10px ${profileColor}40;">
-                                <div class="profile-info">
-                                    <span class="profile-name" style="color: ${profileColor};">${user.username}</span>
-                                    <span class="profile-hint">Můj profil ▼</span>
-                                </div>
+                        <div class="profile-container" id="profile-container">
+                            
+                            <div class="profile-btn" id="profile-btn">
+                                <img src="${avatarUrl}" alt="Avatar">
+                                <span class="name">${user.username}</span>
+                                <span class="arrow">▼</span>
                             </div>
 
-                            <!-- Vyjížděcí menu -->
-                            <div id="profile-dropdown" class="profile-dropdown">
-                                
+                            <div class="dropdown">
                                 <div class="dropdown-header">
-                                    <div class="dropdown-role-label">TVOJE ROLE NA SERVERU</div>
-                                    <div class="dropdown-role-name" style="color: ${profileColor}; text-shadow: 0 0 15px ${profileColor}60;">${roleText}</div>
+                                    <span class="role-title">Tvoje pozice</span>
+                                    <div class="role-badge" style="color: ${userRoleColor}; background: ${userRoleColor}15; border: 1px solid ${userRoleColor}50;">
+                                        ${userRoleName}
+                                    </div>
                                 </div>
                                 
-                                <div class="dropdown-menu">
-                                    <a href="#registrace" class="dropdown-item action-reg">
-                                        <span style="font-size: 16px;">📝</span> Nová registrace jezdce
+                                <div class="dropdown-body">
+                                    <a href="#registrace" class="dropdown-item">
+                                        <i>📝</i> Registrace jezdce
                                     </a>
                                     
                                     ${isAdmin ? `
-                                        <a href="/admin" class="dropdown-item action-admin">
-                                            <span style="font-size: 16px;">⚙️</span> Administrace webu
+                                        <a href="/admin" class="dropdown-item item-admin">
+                                            <i>⚙️</i> Administrace
                                         </a>
                                     ` : ''}
                                     
-                                    <a href="/logout" class="dropdown-item action-logout">
-                                        <span style="font-size: 16px;">🚪</span> Odhlásit se
+                                    <a href="/logout" class="dropdown-item item-logout">
+                                        <i>🚪</i> Odhlásit se
                                     </a>
                                 </div>
-
                             </div>
                         </div>
                     `;
 
-                    // Logika pro kliknutí na profil s novou animací
-                    const profileToggle = document.getElementById('profile-toggle');
-                    const dropdown = document.getElementById('profile-dropdown');
+                    const profileContainer = document.getElementById('profile-container');
+                    const profileBtn = document.getElementById('profile-btn');
                     
-                    profileToggle.addEventListener('click', (e) => {
+                    profileBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        dropdown.classList.toggle('active');
+                        profileContainer.classList.toggle('active');
                     });
 
                     document.addEventListener('click', () => {
-                        dropdown.classList.remove('active');
+                        profileContainer.classList.remove('active');
                     });
 
-                    // Změna hlavního tlačítka uprostřed obrazovky
                     if (heroAuthBtn) {
                         heroAuthBtn.innerHTML = `VÍTEJ ZPĚT, ${user.username.toUpperCase()}`;
                         heroAuthBtn.href = "#";
