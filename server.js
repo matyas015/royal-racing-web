@@ -5,11 +5,7 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-// Pro Railway musí být port dynamický, jinak to občas padá
-const PORT = process.env.PORT || 3000;
-
-// !! DŮLEŽITÉ: Tohle server potřebuje, aby uměl číst odeslaná data z Administrace
-app.use(express.json());
+const PORT = 3000;
 
 // Nastavení sessions (aby si web pamatoval, že je uživatel přihlášený)
 app.use(session({
@@ -20,45 +16,6 @@ app.use(session({
 
 // Servírování tvého HTML a CSS ze složky public
 app.use(express.static(path.join(__dirname, 'public')));
-
-// ==========================================
-// DATABÁZE ŽEBŘÍČKU (Zatím v paměti serveru)
-// ==========================================
-let leaderboardData = [
-    { id: 1, name: "VIKTOR_CZ", wins: 47, podiums: 61, points: 2840 },
-    { id: 2, name: "SpeedKing99", wins: 39, podiums: 55, points: 2610 },
-    { id: 3, name: "MadMax_SK", wins: 34, podiums: 50, points: 2390 },
-    { id: 4, name: "DriftLord", wins: 28, podiums: 44, points: 2100 }
-];
-
-// Pošle data žebříčku komukoliv, kdo si o ně řekne (index.html i admin.html)
-app.get('/api/leaderboard', (req, res) => {
-    res.json(leaderboardData);
-});
-
-// Přijme nová data z Administrace a uloží je (CHRÁNĚNO!)
-app.post('/api/leaderboard', (req, res) => {
-    // Kontrola 1: Je vůbec přihlášený?
-    if (!req.session.user) {
-        return res.status(401).json({ error: 'Nepřihlášen' });
-    }
-    
-    // ======== TADY ZADEJ ID TVÉ DISCORD ROLE ORGANIZÁTORA ========
-    const ADMIN_ROLE_ID = '1423786653440540703'; 
-    
-    // Kontrola 2: Má roli organizátora?
-    if (!req.session.user.roles.includes(ADMIN_ROLE_ID)) {
-        return res.status(403).json({ error: 'Nemáš oprávnění' });
-    }
-
-    // Pokud prošel kontrolou, uložíme nová data
-    leaderboardData = req.body;
-    res.json({ success: true });
-});
-
-// ==========================================
-// PŘIHLÁŠENÍ A DISCORD LOGIKA
-// ==========================================
 
 // 1. KROK: Kliknutí na tlačítko přihlášení
 app.get('/auth/discord', (req, res) => {
@@ -128,18 +85,16 @@ app.get('/api/user', (req, res) => {
     }
 });
 
-// Zobrazení Administrace (Musí být nad app.listen)
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
 // Odhlášení
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
-// app.listen musí být VŽDY jako úplně poslední věc v kódu
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Royal Racing server běží na portu ${PORT}`);
+app.listen(PORT, () => {
+    console.log(`🚀 Royal Racing server běží na http://localhost:${PORT}`);
+});
+
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
