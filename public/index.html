@@ -79,7 +79,7 @@
         @keyframes greenLight { to { background: #2aff2a; box-shadow: 0 0 35px #2aff2a; } }
         @keyframes hideLights { to { opacity: 0; transform: translateX(-50%) translateY(-50px); } }
         
-        /* === NAVIGACE (Změněno na position: absolute) === */
+        /* === NAVIGACE === */
         nav {
             display: flex;
             justify-content: space-between;
@@ -122,6 +122,7 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 0 15px rgba(226, 182, 89, 0.1);
+            display: inline-block;
         }
         .discord-btn-nav:hover {
             background: var(--gold);
@@ -149,7 +150,6 @@
             align-items: center;
         }
 
-        /* ŠACHOVNICOVÝ PRAPOR JAKO SPODNÍ LINKA */
         .hero::after {
             content: '';
             position: absolute;
@@ -195,7 +195,6 @@
             gap: 20px;
         }
         
-        /* ENGINE SHAKE NA TLAČÍTKU */
         @keyframes engineShake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             20% { transform: translate(-2px, -1px) rotate(-1deg); }
@@ -334,7 +333,12 @@
             <a href="pravidla.html">Pravidla</a>
             <a href="https://discord.gg/5MyMShFABA" target="_blank">Discord</a>
         </div>
-            <a href="https://discord.gg/5MyMShFABA" class="discord-btn-nav" target="_blank">PŘIDAT SE DO CREW</a>
+        
+        <!-- ZDE JE ZMĚNA PRO PŘIHLÁŠENÍ -->
+        <div id="auth-container">
+            <a href="/auth/discord" class="discord-btn-nav">PŘIHLÁSIT SE</a>
+        </div>
+
     </nav>
 
     <div class="hero">
@@ -344,7 +348,8 @@
             <div class="hero-desc">KDE RYCHLOST POTKÁVÁ PRESTIŽ</div>
             
             <div class="hero-buttons">
-                <a href="/auth/discord" class="discord-btn-nav">PŘIHLÁSIT SE PŘES DISCORD</a>
+                <!-- PŘIDÁNO ID "hero-auth-btn" ABYCHOM TO MOHLI MĚNIT -->
+                <a href="/auth/discord" id="hero-auth-btn" class="discord-btn-nav">PŘIHLÁSIT SE PŘES DISCORD</a>
                 <a href="#zebricek" class="btn-secondary">ZOBRAZIT ŽEBŘÍČEK</a>
             </div>
         </div>
@@ -428,11 +433,57 @@
     </footer>
 
     <script>
+        // Progress bar scroll logic
         window.addEventListener('scroll', () => {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (winScroll / height) * 100;
             document.getElementById('rpmBar').style.width = scrolled + '%';
+        });
+
+        // DISCORD PŘIHLÁŠENÍ LOGIKA
+        document.addEventListener('DOMContentLoaded', async () => {
+            const authContainer = document.getElementById('auth-container');
+            const heroAuthBtn = document.getElementById('hero-auth-btn');
+
+            try {
+                // Dotaz na náš server, jestli je hráč přihlášený
+                const response = await fetch('/api/user');
+                
+                if (response.ok) {
+                    const user = await response.json();
+
+                    // Vytvoření odkazu na profilovku
+                    const avatarUrl = user.avatar 
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` 
+                        : 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+                    // Úprava horního menu - zobrazení profilu
+                    authContainer.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="${avatarUrl}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2b659; object-fit: cover;">
+                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                <span style="color: #e2b659; font-weight: bold; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; font-size: 16px;">
+                                    ${user.username}
+                                </span>
+                                <a href="/logout" style="color: #ffffff; text-decoration: none; font-size: 11px; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+                                    Odhlásit
+                                </a>
+                            </div>
+                        </div>
+                    `;
+
+                    // Úprava hlavního tlačítka uprostřed, aby už neříkalo "Přihlásit se", když je hráč přihlášený
+                    if (heroAuthBtn) {
+                        heroAuthBtn.innerHTML = `VÍTEJ ZPĚT, ${user.username.toUpperCase()}`;
+                        heroAuthBtn.href = "#"; // Tlačítko teď nic nedělá, jen hezky vypadá
+                        heroAuthBtn.style.pointerEvents = "none";
+                        heroAuthBtn.style.border = "2px solid rgba(226, 182, 89, 0.3)";
+                    }
+                }
+            } catch (err) {
+                console.error('Chyba při komunikaci se serverem:', err);
+            }
         });
     </script>
 </body>

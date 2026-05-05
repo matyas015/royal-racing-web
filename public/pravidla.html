@@ -38,7 +38,7 @@
             z-index: 10000; box-shadow: 0 0 10px rgba(226, 182, 89, 0.4); transition: width 0.1s;
         }
 
-        /* === NAVIGACE (Změněno na position: absolute) === */
+        /* === NAVIGACE === */
         nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 20px 5vw; background: rgba(5, 5, 5, 0.95);
@@ -52,7 +52,7 @@
         .nav-links a:hover { color: var(--gold); }
         .nav-links a.active { color: var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 5px; }
         
-        .discord-btn-nav { border: 2px solid var(--gold); padding: 10px 25px; color: var(--gold); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        .discord-btn-nav { border: 2px solid var(--gold); padding: 10px 25px; color: var(--gold); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;}
         .discord-btn-nav:hover { background: var(--gold); color: var(--darker); }
 
         /* Hlavička dokumentu */
@@ -86,7 +86,7 @@
             width: 300px;
             flex-shrink: 0;
             position: sticky;
-            top: 40px; /* Upraveno, jelikož navigace nahoře už nezavazí */
+            top: 40px; 
             background: rgba(10, 10, 10, 0.6);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 4px;
@@ -112,7 +112,7 @@
         
         .doc-section {
             margin-bottom: 80px;
-            scroll-margin-top: 40px; /* Upraveno odsazení odshora */
+            scroll-margin-top: 40px;
         }
         .doc-section:last-child { margin-bottom: 0; }
         
@@ -195,7 +195,11 @@
             <a href="pravidla.html" class="active">Pravidla</a>
             <a href="https://discord.gg/5MyMShFABA" target="_blank">Discord</a>
         </div>
-        <a href="https://discord.gg/5MyMShFABA" class="discord-btn-nav" target="_blank">PŘIDAT SE DO CREW</a>
+
+        <!-- ZDE JE ZMĚNA PRO PŘIHLÁŠENÍ -->
+        <div id="auth-container">
+            <a href="/auth/discord" class="discord-btn-nav">PŘIHLÁSIT SE</a>
+        </div>
     </nav>
 
     <div class="doc-header">
@@ -205,7 +209,6 @@
 
     <div class="layout-wrapper">
         
-        <!-- Boční Navigace pro lepší přehlednost -->
         <aside class="sidebar">
             <div class="sidebar-title">Obsah dokumentu</div>
             <div class="sidebar-nav">
@@ -221,7 +224,6 @@
             </div>
         </aside>
 
-        <!-- Hlavní obsah -->
         <main class="content">
             
             <!-- SEKCE I -->
@@ -490,7 +492,6 @@
                 let current = "";
                 sections.forEach((section) => {
                     const sectionTop = section.offsetTop;
-                    // Úprava offsetu pro přesnější zvýrazňování
                     if (scrollY >= sectionTop - 100) {
                         current = section.getAttribute("id");
                     }
@@ -503,6 +504,38 @@
                     }
                 });
             });
+        });
+
+        // DISCORD PŘIHLÁŠENÍ LOGIKA (Stejné jako v index.html)
+        document.addEventListener('DOMContentLoaded', async () => {
+            const authContainer = document.getElementById('auth-container');
+
+            try {
+                const response = await fetch('/api/user');
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    const avatarUrl = user.avatar 
+                        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` 
+                        : 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+                    authContainer.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="${avatarUrl}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #e2b659; object-fit: cover;">
+                            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                <span style="color: #e2b659; font-weight: bold; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; font-size: 16px;">
+                                    ${user.username}
+                                </span>
+                                <a href="/logout" style="color: #ffffff; text-decoration: none; font-size: 11px; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+                                    Odhlásit
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Chyba při komunikaci se serverem:', err);
+            }
         });
     </script>
 </body>
